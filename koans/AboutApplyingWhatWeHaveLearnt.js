@@ -32,7 +32,7 @@ describe("About Applying What We Have Learnt", function() {
         }
     }
 
-    expect(productsICanEat.length).toBe(FILL_ME_IN);
+    expect(productsICanEat.length).toBe(1);
   });
 
   it("given I'm allergic to nuts and hate mushrooms, it should find a pizza I can eat (functional)", function () {
@@ -40,8 +40,17 @@ describe("About Applying What We Have Learnt", function() {
       var productsICanEat = [];
 
       /* solve using filter() & all() / any() */
+      for (let i = 0; i < products.length; ++i)
+      {
+        let hasMushrooms = _(products[i].ingredients).filter(function(x) { return x == "mushrooms"});
+        let isFalse = function(x) { return !x; };
+        if (!products[i].containsNuts && _(hasMushrooms).all(isFalse)) // or .any(isTrue)
+        {
+          productsICanEat.push(products[i]);
+        }
+      }
 
-      expect(productsICanEat.length).toBe(FILL_ME_IN);
+      expect(productsICanEat.length).toBe(1);
   });
 
   /*********************************************************************************/
@@ -49,20 +58,23 @@ describe("About Applying What We Have Learnt", function() {
   it("should add all the natural numbers below 1000 that are multiples of 3 or 5 (imperative)", function () {
 
     var sum = 0;
-    for(var i=1; i<1000; i+=1) {
+    for (var i=1; i<1000; i+=1) {
       if (i % 3 === 0 || i % 5 === 0) {
         sum += i;
       }
     }
 
-    expect(sum).toBe(FILL_ME_IN);
+    expect(sum).toBe(233168); // calculated by running the code above in console window
   });
 
   it("should add all the natural numbers below 1000 that are multiples of 3 or 5 (functional)", function () {
 
-    var sum = FILL_ME_IN;    /* try chaining range() and reduce() */
+    /* try chaining range() and reduce() */
+    var sum = _(_.range(1, 1000)).reduce(
+      function(memo, x) { return (x % 3 === 0 || x % 5 === 0) ? memo + x : memo; },
+      0);
 
-    expect(233168).toBe(FILL_ME_IN);
+    expect(233168).toBe(sum);
   });
 
   /*********************************************************************************/
@@ -75,15 +87,25 @@ describe("About Applying What We Have Learnt", function() {
         }
     }
 
-    expect(ingredientCount['mushrooms']).toBe(FILL_ME_IN);
+    expect(ingredientCount['mushrooms']).toBe(2);
   });
 
   it("should count the ingredient occurrence (functional)", function () {
     var ingredientCount = { "{ingredient name}": 0 };
 
     /* chain() together map(), flatten() and reduce() */
+    // Looked at a few sources to develop this, ultimately, the final solution came from
+    // http://underscorejs.org/#chain
+    ingredientCount = _(products).chain()
+                        .map(function(n) { return n.ingredients; })
+                        .flatten()
+                        .reduce(function(memo, word) { 
+                          memo[word] = (memo[word] || 0) + 1;
+                          return memo;
+                        }, {})
+                        .value();
 
-    expect(ingredientCount['mushrooms']).toBe(FILL_ME_IN);
+    expect(ingredientCount['mushrooms']).toBe(2);
   });
 
   /*********************************************************************************/
